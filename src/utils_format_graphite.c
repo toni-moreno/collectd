@@ -146,7 +146,7 @@ static int gr_format_name (char *ret, int ret_len,
     if (n_plugin_instance[0] != '\0')
         ssnprintf (tmp_plugin, sizeof (tmp_plugin), "%s%c%s",
             n_plugin,
-            (flags & GRAPHITE_SEPARATE_INSTANCES) ? '.' : '-',
+            (flags & GRAPHITE_SEPARATE_PLUGIN_INSTANCES) ? '.' : '-',
             n_plugin_instance);
     else
         sstrncpy (tmp_plugin, n_plugin, sizeof (tmp_plugin));
@@ -154,7 +154,7 @@ static int gr_format_name (char *ret, int ret_len,
     if (n_type_instance[0] != '\0')
         ssnprintf (tmp_type, sizeof (tmp_type), "%s%c%s",
             n_type,
-            (flags & GRAPHITE_SEPARATE_INSTANCES) ? '.' : '-',
+            (flags & GRAPHITE_SEPARATE_TYPE_INSTANCES) ? '.' : '-',
             n_type_instance);
     else
         sstrncpy (tmp_type, n_type, sizeof (tmp_type));

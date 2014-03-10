@@ -516,7 +516,13 @@ static int wg_config_node (oconfig_item_t *ci)
         else if (strcasecmp ("StoreRates", child->key) == 0)
             cf_util_get_flag (child, &cb->format_flags,
                     GRAPHITE_STORE_RATES);
-        else if (strcasecmp ("SeparateInstances", child->key) == 0)
+        else if (strcasecmp ("SeparatePluginInstances", child->key) == 0)
+            cf_util_get_flag (child, &cb->format_flags,
+                    GRAPHITE_SEPARATE_PLUGIN_INSTANCES);
+        else if (strcasecmp ("SeparateTypeInstances", child->key) == 0)
+            cf_util_get_flag (child, &cb->format_flags,
+                    GRAPHITE_SEPARATE_TYPE_INSTANCES);
+         else if (strcasecmp ("SeparateInstances", child->key) == 0)
             cf_util_get_flag (child, &cb->format_flags,
                     GRAPHITE_SEPARATE_INSTANCES);
         else if (strcasecmp ("AlwaysAppendDS", child->key) == 0)
