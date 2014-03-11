@@ -83,7 +83,7 @@ static int gr_format_values (char *ret, size_t ret_len,
 }
 
 static void gr_copy_escape_part (char *dst, const char *src, size_t dst_len,
-    char escape_char)
+    char escape_char,char separate_char)
 {
     size_t i;
 
@@ -104,6 +104,9 @@ static void gr_copy_escape_part (char *dst, const char *src, size_t dst_len,
                 || isspace ((int) src[i])
                 || iscntrl ((int) src[i]))
             dst[i] = escape_char;
+	else if ((src[i] == separate_char 
+		&& separate_char != '\0'))
+	    dst[i] = '.';
         else
             dst[i] = src[i];
     }
@@ -115,6 +118,7 @@ static int gr_format_name (char *ret, int ret_len,
         char const *prefix,
         char const *postfix,
         char const escape_char,
+	char const separate_char,
         unsigned int flags)
 {
     char n_host[DATA_MAX_NAME_LEN];
@@ -133,15 +137,15 @@ static int gr_format_name (char *ret, int ret_len,
         postfix = "";
 
     gr_copy_escape_part (n_host, vl->host,
-            sizeof (n_host), escape_char);
+            sizeof (n_host), escape_char,separate_char);
     gr_copy_escape_part (n_plugin, vl->plugin,
-            sizeof (n_plugin), escape_char);
+            sizeof (n_plugin), escape_char, separate_char);
     gr_copy_escape_part (n_plugin_instance, vl->plugin_instance,
-            sizeof (n_plugin_instance), escape_char);
+            sizeof (n_plugin_instance), escape_char, separate_char);
     gr_copy_escape_part (n_type, vl->type,
-            sizeof (n_type), escape_char);
+            sizeof (n_type), escape_char,separate_char);
     gr_copy_escape_part (n_type_instance, vl->type_instance,
-            sizeof (n_type_instance), escape_char);
+            sizeof (n_type_instance), escape_char,separate_char);
 
     if (n_plugin_instance[0] != '\0')
         ssnprintf (tmp_plugin, sizeof (tmp_plugin), "%s%c%s",
@@ -186,6 +190,7 @@ static void escape_graphite_string (char *buffer, char escape_char)
 int format_graphite (char *buffer, size_t buffer_size,
     data_set_t const *ds, value_list_t const *vl,
     char const *prefix, char const *postfix, char const escape_char,
+    char const separate_char,
     unsigned int flags)
 {
     int status = 0;
@@ -210,7 +215,7 @@ int format_graphite (char *buffer, size_t buffer_size,
 
         /* Copy the identifier to `key' and escape it. */
         status = gr_format_name (key, sizeof (key), vl, ds_name,
-                    prefix, postfix, escape_char, flags);
+                    prefix, postfix, escape_char, separate_char, flags);
         if (status != 0)
         {
             ERROR ("format_graphite: error with gr_format_name");
