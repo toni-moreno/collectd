@@ -187,6 +187,62 @@ static void escape_graphite_string (char *buffer, char escape_char)
 		*head = escape_char;
 }
 
+/*after escaped and separated with separate char '@' by example
+* depending on the plugin and how it make the plugin and type
+*  instance and its prefix/suffix parameters  it is possible to
+*  find substrings we must remove like:
+*  a) xxx.-yyy (bad)=> xxx.yyy (good)
+*  b) xxx-.yyy (bad)=> xxx.yyy (good)
+* ---------------
+*  when fix_keymetric_after_searation() is done
+* this key metric:
+* 	test1.test2-.-test3-.test4-test5.test6.-test7-.test8-test9
+* will be:
+*	test1.test2.test3.test4-test5.test6.test7.test8-test9
+* by supress -. and .- combinations
+*/
+
+
+static void  fix_keymetric_after_separation(char *buffer) 
+{
+	char bcopy[10*DATA_MAX_NAME_LEN];
+	int i=1;
+	int j=0;
+	int dotfound=0;
+	char prev;
+	if(buffer[0] == '\0'){ 
+		DEBUG("void buffer found");
+		 return;
+	}
+
+	strcpy(bcopy, buffer);
+	prev=bcopy[0];
+	while (bcopy[i]!= '\0' && i<10*DATA_MAX_NAME_LEN) {
+		if( prev=='-' && bcopy[i] == '.') {
+			DEBUG("found forbidden convination '-.'");
+		}
+		else if( prev=='.' && bcopy[i] == '-'){
+			buffer[j]=prev;
+			j++;
+			dotfound=1;
+		}
+		else if( dotfound == 1 && prev == '-') {
+			DEBUG("found forbidden convination '.-'");	
+			dotfound=0;
+		}
+		else {
+			buffer[j]=prev;
+			j++;
+		}
+		prev=bcopy[i];
+		i++;
+	
+	}
+	
+	buffer[j]=prev;
+	buffer[j+1]='\0';
+}
+
 int format_graphite (char *buffer, size_t buffer_size,
     data_set_t const *ds, value_list_t const *vl,
     char const *prefix, char const *postfix, char const escape_char,
@@ -222,6 +278,11 @@ int format_graphite (char *buffer, size_t buffer_size,
             sfree (rates);
             return (status);
         }
+	/*after escaped and if separation done we should fix some 
+	* metric paths ( depending the plugin and their options)
+	*/
+
+	if(separate_char != '\0' ) fix_keymetric_after_separation(key);
 
         escape_graphite_string (key, escape_char);
         /* Convert the values to an ASCII representation and put that into
