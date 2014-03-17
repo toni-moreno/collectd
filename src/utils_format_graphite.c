@@ -215,7 +215,7 @@ static void  fix_keymetric_after_separation(char *buffer)
 		 return;
 	}
 
-	strcpy(bcopy, buffer);
+	strncpy(bcopy, buffer,10*DATA_MAX_NAME_LEN);
 	prev=bcopy[0];
 	while (bcopy[i]!= '\0' && i<10*DATA_MAX_NAME_LEN) {
 		if( prev=='-' && bcopy[i] == '.') {
