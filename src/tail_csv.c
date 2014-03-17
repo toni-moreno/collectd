@@ -111,7 +111,7 @@ static int tcsv_read_metric (instance_definition_t *id,
         return (EINVAL);
 
     if ((md->value_from >= (int)fields_num) || (id->time_from >= (int)fields_num)) {
-	WARNING("CSV: value index o time index not in fiels Time/Value/MAX (%d/%d/%d) ",id->time_from,md->value_from,(int)fields_num);
+	WARNING("tail_csv plugin: value index o time index not in fiels Time/Value/MAX (%d/%d/%d) ",id->time_from,md->value_from,(int)fields_num);
         return (EINVAL);
     }
 
@@ -121,7 +121,7 @@ static int tcsv_read_metric (instance_definition_t *id,
 
     status = parse_value (fields[md->value_from], &v, md->data_source_type);
     if (status != 0){
-	WARNING("CSV: parse value status %d",status);
+	WARNING("tail_csv plugin: parse value status %d",status);
         return (status);
     }
 
@@ -172,7 +172,7 @@ static int tcsv_read_buffer (instance_definition_t *id,
             metrics_num++;
     }
 
-    DEBUG("CSV number of columns count %d",(int)metrics_num);
+    DEBUG("tail_csv plugin: number of columns count %d",(int)metrics_num);
 
     if (metrics_num == 1) {
         ERROR("tail_csv plugin: last line of `%s' does not contain "
